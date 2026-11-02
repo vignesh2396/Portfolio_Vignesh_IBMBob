@@ -1,0 +1,12 @@
+﻿{
+    "pythonVersion": "3.15",
+    "pythonPlatform": "Windows",
+    "pythonPath": "C:\\Users\\vigne\\AppData\\Local\\Programs\\Python\\Python315\\python.exe",
+    "venvPath": "C:\\Users\\vigne\\AppData\\Local\\Programs\\Python\\Python315",
+    "extraPaths": [
+        "C:\\Users\\vigne\\AppData\\Local\\Programs\\Python\\Python315\\Lib\\site-packages"
+    ],
+    "typeCheckingMode": "basic",
+    "reportMissingImports": "none",
+    "reportMissingModuleSource": "none"
+}

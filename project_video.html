@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vignesh AI Portfolio — 150-Second Project Presentation</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0a0d14;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: #e2e8f0;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+  #video-stage { width:100%; height:100%; position:relative; }
+
+  .slide {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    padding: 3rem 4rem;
+    opacity: 0; transform: scale(0.96);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+    pointer-events: none;
+  }
+  .slide.active { opacity:1; transform:scale(1); pointer-events:all; }
+
+  /* Backgrounds */
+  .slide[data-bg="1"] { background: radial-gradient(ellipse at 60% 40%, #1a1a3e 0%, #0a0d14 70%); }
+  .slide[data-bg="2"] { background: radial-gradient(ellipse at 30% 60%, #0d1f2d 0%, #0a0d14 70%); }
+  .slide[data-bg="3"] { background: radial-gradient(ellipse at 70% 30%, #1a0d2e 0%, #0a0d14 70%); }
+  .slide[data-bg="4"] { background: radial-gradient(ellipse at 40% 70%, #0d2218 0%, #0a0d14 70%); }
+  .slide[data-bg="5"] { background: radial-gradient(ellipse at 60% 50%, #1f1a0d 0%, #0a0d14 70%); }
+  .slide[data-bg="6"] { background: radial-gradient(ellipse at 30% 30%, #0d1a2e 0%, #0a0d14 70%); }
+  .slide[data-bg="7"] { background: radial-gradient(ellipse at 70% 60%, #1a0d1f 0%, #0a0d14 70%); }
+  .slide[data-bg="8"] { background: radial-gradient(ellipse at 50% 50%, #0d1f14 0%, #0a0d14 70%); }
+  .slide[data-bg="9"] { background: radial-gradient(ellipse at 40% 40%, #1a1a0d 0%, #0a0d14 70%); }
+  .slide[data-bg="10"] { background: radial-gradient(ellipse at 60% 40%, #0d0d2e 0%, #0a0d14 70%); }
+
+  #progress-bar {
+    position:fixed; bottom:0; left:0;
+    height:4px;
+    background: linear-gradient(90deg, #63b3ed, #b794f4, #68d391);
+    width:0%;
+    transition: width 0.3s linear;
+    z-index:100;
+  }
+  #controls {
+    position:fixed; bottom:14px; right:20px;
+    display:flex; gap:10px; z-index:100;
+  }
+  #controls button {
+    background:#1a1f2e; border:1px solid #4a5568;
+    color:#e2e8f0; padding:6px 14px;
+    border-radius:8px; cursor:pointer; font-size:0.78rem;
+  }
+  #controls button:hover { border-color:#63b3ed; }
+  #slide-counter {
+    position:fixed; bottom:18px; left:20px;
+    font-size:0.72rem; color:#4a5568; z-index:100;
+  }
+  #timer-display {
+    position:fixed; top:14px; right:20px;
+    font-size:0.72rem; color:#4a5568; z-index:100;
+    font-family: 'Courier New', monospace;
+  }
+
+  /* Typography */
+  .grad-text {
+    background: linear-gradient(135deg, #63b3ed 0%, #b794f4 50%, #68d391 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  h1.hero { font-size:3.2rem; font-weight:800; line-height:1.15; text-align:center; }
+  h2.section-title { font-size:1.9rem; font-weight:700; color:#63b3ed; margin-bottom:0.4rem; text-align:center; }
+  .subtitle { font-size:1.05rem; color:#a0aec0; text-align:center; margin-top:0.6rem; }
+  .caption { font-size:0.82rem; color:#718096; text-align:center; margin-top:0.5rem; }
+
+  .badge {
+    display:inline-block; background:#2d3748; color:#90cdf4;
+    border:1px solid #4a5568; border-radius:20px; padding:3px 14px;
+    font-size:0.8rem; margin:3px;
+  }
+  .badge.green { color:#68d391; border-color:#276749; }
+  .badge.purple { color:#d6bcfa; border-color:#553c9a; }
+  .badge.yellow { color:#f6e05e; border-color:#744210; }
+
+  .cards-grid { display:grid; gap:1rem; width:100%; max-width:900px; }
+  .cards-grid.cols-2 { grid-template-columns:1fr 1fr; }
+  .cards-grid.cols-3 { grid-template-columns:1fr 1fr 1fr; }
+  .card {
+    background:#1a1f2e; border:1px solid #2d3748;
+    border-radius:12px; padding:1.1rem 1.3rem;
+  }
+  .card-title { font-weight:700; color:#e2e8f0; margin-bottom:0.3rem; font-size:0.95rem; }
+  .card-body { font-size:0.82rem; color:#a0aec0; line-height:1.5; }
+
+  .stat-row { display:flex; gap:1.2rem; justify-content:center; margin-top:1.5rem; }
+  .stat {
+    background:#1a1f2e; border:1px solid #2d3748;
+    border-radius:12px; padding:1.2rem 1.8rem; text-align:center; min-width:110px;
+  }
+  .stat-num { font-size:2.2rem; font-weight:800; color:#63b3ed; }
+  .stat-lbl { font-size:0.78rem; color:#718096; margin-top:2px; }
+
+  .skill-item { margin-bottom:0.7rem; width:100%; }
+  .skill-label { display:flex; justify-content:space-between; font-size:0.83rem; margin-bottom:4px; color:#cbd5e0; }
+  .bar-bg { background:#2d3748; border-radius:9999px; height:7px; }
+  .bar-fill { background:linear-gradient(90deg, #4299e1, #b794f4); border-radius:9999px; height:7px; }
+
+  .arch-box {
+    background:#111827; border:1px solid #374151; border-radius:10px;
+    padding:1.4rem 2rem; font-family:'Courier New',monospace;
+    font-size:0.8rem; color:#9ca3af; white-space:pre; line-height:1.6;
+    max-width:620px; width:100%; text-align:left;
+  }
+  .arch-hl { color:#63b3ed; }
+
+  .timeline { width:100%; max-width:820px; }
+  .tl-item { display:flex; align-items:flex-start; gap:1rem; margin-bottom:0.8rem; }
+  .tl-dot {
+    min-width:34px; height:34px; background:#2d3748;
+    border:2px solid #63b3ed; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:0.75rem; font-weight:700; color:#63b3ed;
+  }
+  .tl-content .tl-title { font-size:0.9rem; font-weight:700; color:#e2e8f0; }
+  .tl-content .tl-desc { font-size:0.78rem; color:#a0aec0; }
+
+  .mock-browser {
+    background:#1a1f2e; border:1px solid #374151; border-radius:10px;
+    width:100%; max-width:800px; overflow:hidden;
+  }
+  .browser-bar {
+    background:#111827; padding:8px 14px; display:flex; align-items:center; gap:6px;
+    border-bottom:1px solid #374151;
+  }
+  .dot { width:11px; height:11px; border-radius:50%; }
+  .dot.r { background:#fc8181; } .dot.y { background:#f6e05e; } .dot.g { background:#68d391; }
+  .browser-url {
+    background:#0f1117; border:1px solid #374151; border-radius:6px;
+    padding:3px 12px; font-size:0.75rem; color:#718096; margin-left:8px; flex:1;
+  }
+  .browser-content { padding:1.2rem 1.5rem; }
+
+  .chat-msg { display:flex; gap:10px; margin-bottom:10px; align-items:flex-start; }
+  .chat-bubble { border-radius:10px; padding:8px 14px; font-size:0.82rem; line-height:1.5; }
+  .chat-bubble.user { background:#2d3748; color:#e2e8f0; }
+  .chat-bubble.bot { background:#1a2744; border:1px solid #2d4a6e; color:#90cdf4; }
+  .avatar {
+    width:28px; height:28px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:0.8rem; flex-shrink:0; margin-top:2px;
+  }
+  .avatar.user-av { background:#4a5568; }
+  .avatar.bot-av { background:#2d4a6e; }
+
+  .mini-table { width:100%; max-width:700px; border-collapse:collapse; font-size:0.8rem; }
+  .mini-table th { background:#1a1f2e; color:#63b3ed; padding:6px 10px; text-align:left; border-bottom:1px solid #2d3748; }
+  .mini-table td { padding:6px 10px; border-bottom:1px solid #1a1f2e; color:#a0aec0; }
+  .mini-table tr:nth-child(even) td { background:#111520; }
+
+  .tag { display:inline-block; background:#2d3748; color:#b794f4; border-radius:6px; padding:1px 8px; font-size:0.72rem; margin:1px; }
+  .sep { height:2px; background:linear-gradient(90deg,transparent,#2d3748,transparent); width:60%; margin:1rem auto; }
+  .footer { position:fixed; bottom:38px; left:50%; transform:translateX(-50%); font-size:11px; color:#2d3748; text-align:center; pointer-events:none; z-index:50; white-space:nowrap; }
+</style>
+</head>
+<body>
+
+<div id="video-stage">
+
+<!-- ═══════════════════════════════════════════════════════
+     SLIDE 1 — Title Card  (0–12 s)
+═══════════════════════════════════════════════════════ -->
+<div class="slide active" data-bg="1" data-duration="12">
+  <div style="margin-bottom:1.5rem;font-size:4rem;">🧠</div>
+  <h1 class="hero grad-text">Vignesh — AI &amp; Quantum<br>Expert Portfolio</h1>
+  <p class="subtitle" style="margin-top:1rem;">A Streamlit + Gemini AI powered Personal Portfolio Website</p>
+  <div style="margin-top:1.6rem;display:flex;gap:0.6rem;flex-wrap:wrap;justify-content:center;">
+    <span class="badge">IBM SkillsBuild 2026</span>
+    <span class="badge purple">Edunet Foundation</span>
+    <span class="badge green">Gartner Program</span>
+  </div>
+  <p class="caption" style="margin-top:1.4rem;">Built with IBM Bob · Python 3.10+ · Streamlit 1.66+ · Google Gemini 2.5 Flash</p>
+  <div class="sep" style="margin-top:1.8rem;"></div>
+  <p style="font-size:0.78rem;color:#4a5568;text-align:center;margin-top:0.6rem;">▶ Auto-playing 150-second presentation — use controls below</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SLIDE 2 — Project Overview  (12–27 s)
+═══════════════════════════════════════════════════════ -->
+<div class="slide" data-bg="2" data-duration="15">
+  <h2 class="section-title">📋 Project Overview</h2>
+  <p class="subtitle" style="margin-bottom:1.4rem;max-width:700px;">Professional, AI-powered personal portfolio that showcases expertise and embeds an intelligent ReAct AI assistant</p>
+  <div class="cards-grid cols-3" style="max-width:820px;">
+    <div class="card">
+      <div class="card-title">🎯 Primary Goal</div>
+      <div class="card-body">Personal portfolio + AI-powered visitor Q&amp;A agent using IBM Granite / Google Gemini</div>
+    </div>
+    <div class="card">
+      <div class="card-title">🧑‍💼 About Vignesh</div>
+      <div class="card-body">Technical Trainer specialising in Agentic AI, Machine Learning &amp; Quantum Computing</div>
+    </div>
+    <div class="card">
+      <div class="card-title">🏛️ Program</div>
+      <div class="card-body">IBM SkillsBuild × Edunet Foundation × Gartner Program — November 2026</div>
+    </div>
+  </div>
+  <div class="stat-row">
+    <div class="stat"><div class="stat-num">6</div><div class="stat-lbl">Pages</div></div>
+    <div class="stat"><div class="stat-num">4</div><div class="stat-lbl">AI Tools</div></div>
+    <div class="stat"><div class="stat-num">5</div><div class="stat-lbl">Courses</div></div>
+    <div class="stat"><div class="stat-num">4</div><div class="stat-lbl">Projects</div></div>
+    <div class="stat"><div class="stat-num">17</div><div class="stat-lbl">Skills</div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SLIDE 3 — SDLC Plan  (27–44 s)
+═══════════════════════════════════════════════════════ -->
+<div class="slide" data-bg="3" data-duration="17">
+  <h2 class="section-title">📐 Agentic AI SDLC Plan</h2>
+  <p class="subtitle" style="margin-bottom:1.2rem;">7 structured phases — from requirements to monitoring</p>
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-dot">1</div><div class="tl-content"><div class="tl-title">Requirements Engineering &amp; Goal Definition</div><div class="tl-desc">User stories · ReAct pattern · Success metric ≥ 90% accuracy &lt; 3 s response</div></div></div>
+    <div class="tl-item"><div class="tl-dot">2</div><div class="tl-content"><div class="tl-title">System Design &amp; Architecture</div><div class="tl-desc">Streamlit frontend → watsonx.ai REST API · Modular component map</div></div></div>
+    <div class="tl-item"><div class="tl-dot">3</div><div class="tl-content"><div class="tl-title">Agent Design (Agentic AI Layer)</div><div class="tl-desc">ReAct agent · System prompt grounding · 4 tools · Temperature 0.3 guardrails</div></div></div>
+    <div class="tl-item"><div class="tl-dot">4</div><div class="tl-content"><div class="tl-title">Development</div><div class="tl-desc">Modular Python · ibm-watsonx-ai / google-genai SDK · Centralised data/profile.py</div></div></div>
+    <div class="tl-item"><div class="tl-dot">5</div><div class="tl-content"><div class="tl-title">Testing &amp; Evaluation</div><div class="tl-desc">Pytest · UI smoke test · 10-question golden set · Hallucination manual review</div></div></div>
+    <div class="tl-item"><div class="tl-dot">6</div><div class="tl-content"><div class="tl-title">Deployment</div><div class="tl-desc">run_portfolio.bat · Streamlit Community Cloud · IBM Code Engine · Docker</div></div></div>
+    <div class="tl-item"><div class="tl-dot">7</div><div class="tl-content"><div class="tl-title">Monitoring &amp; Continuous Improvement</div><div class="tl-desc">logs/chat_log.csv · Monthly drift review · Thumbs up/down feedback loop</div></div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SLIDE 4 — Architecture  (44–58 s)
+═══════════════════════════════════════════════════════ -->
+<div class="slide" data-bg="4" data-duration="14">
+  <h2 class="section-title">🏗️ System Architecture</h2>
+  <p class="subtitle" style="margin-bottom:1.2rem;">Clean separation: Streamlit UI → ReAct Agent → AI Backend</p>
+  <div class="arch-box">
+<span class="arch-hl">┌─────────────────────────────────────────────────────┐</span>
+<span class="arch-hl">│              Streamlit Frontend (app.py)             │</span>
+│  <span style="color:#68d391;">🏠 Home</span>   <span style="color:#68d391;">💡 Skills</span>   <span style="color:#68d391;">📚 Courses</span>   <span style="color:#68d391;">🚀 Projects</span>  │
+│               <span style="color:#b794f4;">🤖 AI Assistant     📬 Contact</span>          │
+│                    ┌──────────────────┐               │
+│                    │  ReAct Agent     │               │
+│                    │  ai_chat.py      │               │
+│                    │  agent_tools.py  │               │
+│                    └────────┬─────────┘               │
+<span class="arch-hl">└─────────────────────────────┼───────────────────────┘</span>
+                               │ HTTPS / REST
+             <span class="arch-hl">┌─────────────────▼──────────────────────┐</span>
+             <span class="arch-hl">│   Google Gemini 2.5 Flash  (LIVE)       │</span>
+             <span class="arch-hl">│   IBM Granite 3 8B Instruct (SDLC plan) │</span>
+             <span class="arch-hl">└────────────────────────────────────────┘</span>
+  </div>
+  <div style="display:flex;gap:0.8rem;margin-top:1.2rem;flex-wrap:wrap;justify-content:center;">
+    <span class="badge">data/profile.py — Central data store</span>
+    <span class="badge purple">4 agent tools grounding responses</span>
+    <span class="badge green">logs/chat_log.csv — Monitoring</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SLIDE 5 — Home Page Screenshot  (58–72 s)
+═══════════════════════════════════════════════════════ -->
+<div class="slide" data-bg="5" data-duration="14">
+  <h2 class="section-title">🏠 Page 1 — Home</h2>
+  <div class="mock-browser" style="max-width:780px;">
+    <div class="browser-bar">
+      <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+      <div class="browser-url">localhost:8501 — 🧠 Vignesh | AI &amp; Quantum Expert</div>
+    </div>
+    <div class="browser-content">
+      <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
+        <div style="flex:1;min-width:240px;">
+          <div style="font-size:0.7rem;color:#718096;margin-bottom:4px;font-family:monospace;">🧠 Vignesh · AI · ML · Quantum Trainer</div>
+          <div style="font-size:1.5rem;font-weight:800;background:linear-gradient(135deg,#63b3ed,#b794f4,#68d391);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.2;">Technical Trainer &amp;<br>AI Expert</div>
+          <p style="font-size:0.78rem;color:#a0aec0;margin-top:8px;line-height:1.5;">Passionate practitioner in Agentic AI, ML &amp; Quantum Computing. Affiliated with IBM SkillsBuild &amp; Edunet Foundation.</p>
+          <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;">
+            <span class="tag">Agentic AI</span><span class="tag">IBM Granite</span><span class="tag">Qiskit</span><span class="tag">Streamlit</span>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;min-width:200px;">
+          <div class="stat" style="padding:0.7rem;"><div class="stat-num" style="font-size:1.5rem;">500+</div><div class="stat-lbl">Trained</div></div>
+          <div class="stat" style="padding:0.7rem;"><div class="stat-num" style="font-size:1.5rem;">5</div><div class="stat-lbl">Courses</div></div>
+          <div class="stat" style="padding:0.7rem;"><div class="stat-num" style="font-size:1.5rem;">4</div><div class="stat-lbl">Projects</div></div>
+          <div class="stat" style="padding:0.7rem;"><div class="stat-num" style="font-size:1.5rem;">3</div><div class="stat-lbl">Domains</div></div>
+        </div>
+      </div>
+      <div style="margin-top:12px;font-size:0.72rem;color:#4a5568;border-top:1px solid #2d3748;padding-top:8px;">⭐ "From zero to building my own ReAct agent in three days." — Meera K., IIT &nbsp;|&nbsp; "Exceptional communicator!" — Arjun R., TCS</div>
+    </div>
+  </div>
+  <p class="caption">Hero section with gradient name, stats tiles &amp; testimonials</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SLIDE 6 — Skills Page Screenshot  (72–86 s)
+═══════════════════════════════════════════════════════ -->
+<div class="slide" data-bg="6" data-duration="14">
+  <h2 class="section-title">💡 Page 2 — Skills Matrix</h2>
+  <div class="mock-browser" style="max-width:780px;">
+    <div class="browser-bar">
+      <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+      <div class="browser-url">localhost:8501 — Skills</div>
+    </div>
+    <div class="browser-content">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+        <div>
+          <div style="font-size:0.82rem;font-weight:700;color:#b794f4;margin-bottom:8px;">🤖 Agentic AI</div>
+          <div class="skill-item"><div class="skill-label"><span>Agentic AI / LLM Orchestration</span><span>95%</span></div><div class="bar-bg"><div class="bar-fill" style="width:95%"></div></div></div>
+          <div class="skill-item"><div class="skill-label"><span>Prompt Engineering</span><span>92%</span></div><div class="bar-bg"><div class="bar-fill" style="width:92%"></div></div></div>
+          <div class="skill-item"><div class="skill-label"><span>IBM Granite &amp; watsonx.ai</span><span>90%</span></div><div class="bar-bg"><div class="bar-fill" style="width:90%"></div></div></div>
+          <div class="skill-item"><div class="skill-label"><span>RAG Pipelines</span><span>88%</span></div><div class="bar-bg"><div class="bar-fill" style="width:88%"></div></div></div>
+          <div class="skill-item"><div class="skill-label"><span>LangChain / LlamaIndex</span><span>85%</span></div><div class="bar-bg"><div class="bar-fill" style="width:85%"></div></div></div>
+        </div>
+        <div>
+          <div style="font-size:0.82rem;font-weight:700;color:#68d391;margin-bottom:8px;">🔬 Machine Learning</div>
+          <div class="skill-item"><div class="skill-label"><span>Supervised Learning</span><span>93%</span></div><div class="bar-bg"><div class="bar-fill" style="width:93%"></div></div></div>
+          <div class="skill-item"><div class="skill-label"><span>NLP &amp; Text Analytics</span><span>90%</span></div><div class="bar-bg"><div class="bar-fill" style="width:90%"></div></div></div>
+          <div class="skill-item"><div class="skill-label"><span>Deep Learning (PyTorch/TF)</span><span>88%</span></div><div class="bar-bg"><div class="bar-fill" style="width:88%"></div></div></div>
+          <div class="skill-item"><div class="skill-label"><span>Scikit-learn / XGBoost</span><span>91%</span></div><div class="bar-bg"><div class="bar-fill" style="width:91%"></div></div></div>
+          <div class="skill-item"><div class="skill-label"><span>Qiskit (Quantum)</span><span>85%</span></div><div class="bar-bg"><div class="bar-fill" style="width:85%"></div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="caption">Animated skill bars across 4 categories — 17 skills total · Plotly radar chart also included</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SLIDE 7 — AI Assistant Screenshot  (86–102 s)
+═══════════════════════════════════════════════════════ -->
+<div class="slide" data-bg="7" data-duration="16">
+  <h2 class="section-title">🤖 Page 5 — ReAct AI Assistant</h2>
+  <div class="mock-browser" style="max-width:780px;">
+    <div class="browser-bar">
+      <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+      <div class="browser-url">localhost:8501 — AI Assistant · Gemini 2.5 Flash · ReAct Agent</div>
+    </div>
+    <div class="browser-content">
+      <div style="font-size:0.72rem;color:#718096;margin-bottom:10px;border-bottom:1px solid #2d3748;padding-bottom:6px;">🔷 Powered by Google Gemini 2.5 Flash · Reason + Act agent pattern · Tool-grounded responses</div>
+      <div class="chat-msg">
+        <div class="avatar user-av">👤</div>
+        <div class="chat-bubble user">What courses does Vignesh teach?</div>
+      </div>
+      <div style="font-size:0.7rem;color:#4a5568;margin:4px 0 8px 38px;font-family:monospace;">→ Reasoning: need course list → TOOL_CALL: get_courses() → Running…</div>
+      <div class="chat-msg">
+        <div class="avatar bot-av">🤖</div>
+        <div class="chat-bubble bot">Vignesh delivers <strong>5 courses</strong>:<br>
+        1. <strong>Agentic AI Fundamentals → Advanced</strong> (3 days) — ReAct, IBM Granite, RAG<br>
+        2. <strong>Machine Learning Bootcamp</strong> (5 days) — Supervised/Unsupervised, NLP, MLOps<br>
+        3. <strong>Quantum Computing with Qiskit</strong> (2 days) — Gates, Grover/Shor, VQC<br>
+        4. <strong>IBM watsonx.ai for Enterprise</strong> (1 day) · 5. <strong>Python for Data Science &amp; AI</strong> (4 days)</div>
+      </div>
+      <div class="chat-msg" style="margin-top:6px;">
+        <div class="avatar user-av">👤</div>
+        <div class="chat-bubble user">How can I contact him?</div>
+      </div>
+      <div class="chat-msg">
+        <div class="avatar bot-av">🤖</div>
+        <div class="chat-bubble bot">Reach Vignesh at <strong>vignesh@example.com</strong> or via LinkedIn. Head to the <em>Contact</em> page to send a direct message! 📬</div>
+      </div>
+    </div>
+  </div>
+  <p class="caption">ReAct: Gemini 2.5 Flash reasons → calls tool → returns grounded answer · Chat logged to logs/chat_log.csv</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SLIDE 8 — Projects & Courses  (102–118 s)
+═══════════════════════════════════════════════════════ -->
+<div class="slide" data-bg="8" data-duration="16">
+  <h2 class="section-title">🚀 Projects &amp; 📚 Courses</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;max-width:860px;width:100%;">
+    <div>
+      <div style="font-size:0.82rem;font-weight:700;color:#63b3ed;margin-bottom:8px;">🚀 Projects Showcase (page 4)</div>
+      <div class="card" style="margin-bottom:8px;">
+        <div class="card-title">AI-Powered Portfolio Chatbot <span class="badge green" style="font-size:0.68rem;padding:1px 8px;">Live</span></div>
+        <div class="card-body">This very app — IBM Granite ReAct agent in Streamlit</div>
+        <div style="margin-top:5px;"><span class="tag">Streamlit</span><span class="tag">IBM Granite 3</span><span class="tag">watsonx.ai</span></div>
+      </div>
+      <div class="card" style="margin-bottom:8px;">
+        <div class="card-title">Quantum-Enhanced Fraud Detection <span class="badge yellow" style="font-size:0.68rem;padding:1px 8px;">Done</span></div>
+        <div class="card-body">Hybrid VQC + classical ML on Qiskit for credit-card fraud</div>
+        <div style="margin-top:5px;"><span class="tag">Qiskit</span><span class="tag">Scikit-learn</span><span class="tag">IBM Quantum</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title">RAG Corporate Knowledge Base <span class="badge yellow" style="font-size:0.68rem;padding:1px 8px;">Done</span></div>
+        <div class="card-body">IBM Granite embeddings + FAISS vector store for HR Q&amp;A</div>
+        <div style="margin-top:5px;"><span class="tag">LangChain</span><span class="tag">FAISS</span><span class="tag">IBM Granite</span></div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:0.82rem;font-weight:700;color:#b794f4;margin-bottom:8px;">📚 Courses Delivered (page 3)</div>
+      <table class="mini-table">
+        <tr><th>Course</th><th>Duration</th><th>Level</th></tr>
+        <tr><td>Agentic AI Fundamentals</td><td>3 Days</td><td><span class="badge" style="font-size:0.68rem;padding:1px 8px;">Beg→Adv</span></td></tr>
+        <tr><td>ML Bootcamp</td><td>5 Days</td><td><span class="badge" style="font-size:0.68rem;padding:1px 8px;">Beg→Int</span></td></tr>
+        <tr><td>Quantum with Qiskit</td><td>2 Days</td><td><span class="badge purple" style="font-size:0.68rem;padding:1px 8px;">Int→Adv</span></td></tr>
+        <tr><td>IBM watsonx.ai Enterprise</td><td>1 Day</td><td><span class="badge green" style="font-size:0.68rem;padding:1px 8px;">Beginner</span></td></tr>
+        <tr><td>Python for Data Science</td><td>4 Days</td><td><span class="badge green" style="font-size:0.68rem;padding:1px 8px;">Beginner</span></td></tr>
+      </table>
+      <div style="margin-top:10px;font-size:0.75rem;color:#718096;">Delivered to: IBM SkillsBuild cohorts · Edunet Foundation · Gartner partner institutions · IIT &amp; Research Institutes</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SLIDE 9 — Tech Stack & File Structure  (118–134 s)
+═══════════════════════════════════════════════════════ -->
+<div class="slide" data-bg="9" data-duration="16">
+  <h2 class="section-title">🛠️ Tech Stack &amp; Project Structure</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;max-width:860px;width:100%;align-items:start;">
+    <div>
+      <div style="font-size:0.82rem;font-weight:700;color:#63b3ed;margin-bottom:8px;">Technology Stack</div>
+      <table class="mini-table">
+        <tr><th>Layer</th><th>Technology</th></tr>
+        <tr><td>Frontend</td><td>Streamlit 1.40+</td></tr>
+        <tr><td>AI Model (Live)</td><td>Google Gemini 2.5 Flash</td></tr>
+        <tr><td>AI Model (SDLC)</td><td>IBM Granite 3 8B Instruct</td></tr>
+        <tr><td>AI SDK</td><td>google-genai / ibm-watsonx-ai</td></tr>
+        <tr><td>Charting</td><td>Plotly Express</td></tr>
+        <tr><td>Data Store</td><td>Python dicts — no DB needed</td></tr>
+        <tr><td>Styling</td><td>Custom CSS via st.markdown</td></tr>
+        <tr><td>Platform</td><td>Python 3.10+ · Win / Mac / Linux</td></tr>
+        <tr><td>Deployment</td><td>Streamlit Cloud / IBM Code Engine</td></tr>
+      </table>
+    </div>
+    <div>
+      <div style="font-size:0.82rem;font-weight:700;color:#b794f4;margin-bottom:8px;">Project Structure</div>
+      <div style="background:#111827;border:1px solid #374151;border-radius:8px;padding:0.9rem 1.1rem;font-family:'Courier New',monospace;font-size:0.73rem;color:#9ca3af;line-height:1.8;">
+        <span style="color:#63b3ed;">app.py</span> — Entry point, CSS, routing<br>
+        <span style="color:#63b3ed;">data/profile.py</span> — All portfolio data<br>
+        <span style="color:#68d391;">components/ai_chat.py</span> — Agent loop<br>
+        <span style="color:#68d391;">components/agent_tools.py</span> — 4 tools<br>
+        <span style="color:#b794f4;">pages/home.py</span> — Hero, stats, testimonials<br>
+        <span style="color:#b794f4;">pages/skills.py</span> — Skill bars + radar<br>
+        <span style="color:#b794f4;">pages/courses.py</span> — Catalogue cards<br>
+        <span style="color:#b794f4;">pages/projects.py</span> — Project showcase<br>
+        <span style="color:#b794f4;">pages/contact.py</span> — Contact form<br>
+        <span style="color:#f6e05e;">logs/chat_log.csv</span> — Query logging<br>
+        <span style="color:#fc8181;">run_portfolio.bat</span> — One-click launch<br>
+        <span style="color:#fc8181;">SDLC_PLAN.md · README.md</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SLIDE 10 — Definition of Done / Wrap-up  (134–150 s)
+═══════════════════════════════════════════════════════ -->
+<div class="slide" data-bg="10" data-duration="16">
+  <div style="font-size:3.5rem;margin-bottom:1rem;">🎯</div>
+  <h2 class="section-title" style="font-size:2.2rem;">Definition of Done ✅</h2>
+  <div class="cards-grid cols-2" style="max-width:720px;margin-top:1rem;">
+    <div class="card"><div class="card-title">✅ All 6 Pages render</div><div class="card-body">Home · Skills · Courses · Projects · AI Assistant · Contact — zero Python errors</div></div>
+    <div class="card"><div class="card-title">✅ AI Chat Widget live</div><div class="card-body">Sends queries to Gemini 2.5 Flash and displays grounded, tool-backed responses</div></div>
+    <div class="card"><div class="card-title">✅ ReAct Agent Tools</div><div class="card-body">get_courses · get_skills · get_contact_info · get_projects — all 4 functional</div></div>
+    <div class="card"><div class="card-title">✅ One-Click Deploy</div><div class="card-body">run_portfolio.bat installs deps and launches app with a single double-click</div></div>
+  </div>
+  <div style="margin-top:1.4rem;display:flex;gap:0.6rem;flex-wrap:wrap;justify-content:center;">
+    <span class="badge">MIT License</span>
+    <span class="badge purple">github.com/vignesh2396/Portfolio_Vignesh_IBMBob</span>
+    <span class="badge green">Developed with IBM Bob</span>
+  </div>
+  <p style="font-size:0.8rem;color:#63b3ed;margin-top:1.2rem;font-weight:600;">🔷 Powered by IBM Granite (SDLC) &amp; Google Gemini 2.5 Flash (Live)</p>
+  <p style="font-size:0.75rem;color:#4a5568;margin-top:0.4rem;">IBM SkillsBuild × Edunet Foundation × Gartner Program 2026</p>
+</div>
+
+</div><!-- /video-stage -->
+
+<!-- ── UI ── -->
+<div id="progress-bar"></div>
+<div id="slide-counter">Slide 1 / 10</div>
+<div id="timer-display">0:00 / 2:30</div>
+<div id="controls">
+  <button id="btn-prev">◀ Prev</button>
+  <button id="btn-play-pause">⏸ Pause</button>
+  <button id="btn-next">Next ▶</button>
+  <button id="btn-restart">↺ Restart</button>
+</div>
+<div class="footer">Made with IBM Bob</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const TOTAL = 150; // seconds
+  const durations = slides.map(s => parseInt(s.dataset.duration, 10) || 15);
+  // Cumulative start time per slide
+  const cumStart = [];
+  let acc = 0;
+  durations.forEach(d => { cumStart.push(acc); acc += d; });
+
+  let current = 0;
+  let playing = true;
+  let globalElapsed = 0; // total elapsed seconds
+  let lastTick = null;
+  let rafId = null;
+
+  function fmtTime(s) {
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60);
+    return `${m}:${sec.toString().padStart(2,'0')}`;
+  }
+
+  function showSlide(idx) {
+    slides[current].classList.remove('active');
+    current = Math.max(0, Math.min(slides.length - 1, idx));
+    slides[current].classList.add('active');
+    document.getElementById('slide-counter').textContent = `Slide ${current + 1} / ${slides.length}`;
+  }
+
+  function updateUI() {
+    const pct = Math.min(100, (globalElapsed / TOTAL) * 100);
+    document.getElementById('progress-bar').style.width = pct + '%';
+    document.getElementById('timer-display').textContent = fmtTime(globalElapsed) + ' / ' + fmtTime(TOTAL);
+  }
+
+  function tick(timestamp) {
+    if (!playing) { lastTick = null; rafId = requestAnimationFrame(tick); return; }
+    if (lastTick === null) { lastTick = timestamp; }
+    const delta = (timestamp - lastTick) / 1000;
+    lastTick = timestamp;
+    globalElapsed = Math.min(TOTAL, globalElapsed + delta);
+
+    // Determine which slide should be active
+    let targetSlide = slides.length - 1;
+    for (let i = 0; i < cumStart.length; i++) {
+      if (globalElapsed < cumStart[i] + durations[i]) { targetSlide = i; break; }
+    }
+    if (targetSlide !== current) showSlide(targetSlide);
+
+    updateUI();
+
+    if (globalElapsed >= TOTAL) {
+      playing = false;
+      document.getElementById('btn-play-pause').textContent = '▶ Replay';
+      return;
+    }
+    rafId = requestAnimationFrame(tick);
+  }
+
+  function startRAF() { if (rafId) cancelAnimationFrame(rafId); lastTick = null; rafId = requestAnimationFrame(tick); }
+
+  document.getElementById('btn-play-pause').addEventListener('click', function() {
+    if (globalElapsed >= TOTAL) { // replay
+      globalElapsed = 0; showSlide(0); playing = true; this.textContent = '⏸ Pause'; startRAF(); return;
+    }
+    playing = !playing;
+    this.textContent = playing ? '⏸ Pause' : '▶ Play';
+    if (playing) { lastTick = null; }
+  });
+
+  document.getElementById('btn-next').addEventListener('click', function() {
+    if (current < slides.length - 1) {
+      const next = current + 1;
+      globalElapsed = cumStart[next];
+      showSlide(next); updateUI();
+    }
+  });
+
+  document.getElementById('btn-prev').addEventListener('click', function() {
+    if (current > 0) {
+      const prev = current - 1;
+      globalElapsed = cumStart[prev];
+      showSlide(prev); updateUI();
+    }
+  });
+
+  document.getElementById('btn-restart').addEventListener('click', function() {
+    globalElapsed = 0; playing = true;
+    document.getElementById('btn-play-pause').textContent = '⏸ Pause';
+    showSlide(0); updateUI(); lastTick = null;
+  });
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight') document.getElementById('btn-next').click();
+    if (e.key === 'ArrowLeft') document.getElementById('btn-prev').click();
+    if (e.key === ' ') { e.preventDefault(); document.getElementById('btn-play-pause').click(); }
+  });
+
+  startRAF();
+</script>
+
+</body>
+</html>

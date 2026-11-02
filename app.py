@@ -185,7 +185,7 @@ def sidebar_nav():
         st.markdown("<br>", unsafe_allow_html=True)
         st.markdown(
             "<div style='font-size:0.72rem; color:#4a5568; text-align:center;'>"
-            "Powered by IBM Granite 🔷</div>",
+            "Powered by IBM Bob 🔷</div>",
             unsafe_allow_html=True,
         )
 

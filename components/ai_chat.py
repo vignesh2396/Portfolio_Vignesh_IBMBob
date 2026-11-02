@@ -50,7 +50,7 @@ def _build_contents(history: list[dict], user_message: str) -> list[dict]:
 
 def _parse_tool_call(text: str):
     """Check if the model output contains a tool call JSON block."""
-    pattern = r'TOOL_CALL:\s*(\{.*?\})'
+    pattern = r'TOOL_CALL:\s*(\{.*\})'
     match = re.search(pattern, text, re.DOTALL)
     if match:
         try:
